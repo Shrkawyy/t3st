@@ -8,11 +8,11 @@
     inset: 0;
     background:
         linear-gradient(160deg,
-            #040f12 0%,
-            #071a22 30%,
-            #0a2a34 55%,
-            #071820 80%,
-            #040d12 100%);
+            rgba(4,15,18,0.42) 0%,
+            rgba(7,26,34,0.34) 30%,
+            rgba(10,42,52,0.30) 55%,
+            rgba(7,24,32,0.36) 80%,
+            rgba(4,13,18,0.44) 100%);
     display: flex;
     flex-direction: column;
     z-index: 999;

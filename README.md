@@ -1,0 +1,28 @@
+# JaxxV6
+
+JaxxV6 is a GitHub Pages-hosted Tampermonkey build of the custom Senpa client. The userscript runs at `https://senpa.io/web/`, loads the static client from GitHub Pages, and connects directly to `wss://eu1.senpa.io:2053`.
+
+## Publish
+
+1. Create a public GitHub repository named `jaxxv6` under the `Shrkawyy` account.
+2. Upload every file and folder in this directory to the repository root.
+3. In GitHub, open **Settings → Pages**.
+4. Choose **Deploy from a branch**, then select **main** and **/(root)**.
+5. Wait for `https://shrkawyy.github.io/jaxxv6/` to become available.
+
+If the GitHub username or repository name changes, update `DEFAULT_BASE_URL`, `@updateURL`, `@downloadURL`, `@connect`, and `@namespace` in `jaxxv6.user.js`.
+
+## Install
+
+Open `https://shrkawyy.github.io/jaxxv6/` and click **Install Tampermonkey script**. Then visit `https://senpa.io/web/`.
+
+## Important
+
+- Do not deploy the old `server.js`, `api/game-socket.js`, or `vercel.json` files. This build does not proxy the game WebSocket.
+- Do not open `client.html` directly; it is loaded by the userscript.
+- Browser data, including the client device ID, belongs to the `senpa.io` origin in this version. A key previously bound on another origin may not be reusable. Do not publish private keys in the repository.
+- Only use this client in ways allowed by Senpa's rules.
+
+## Files to upload
+
+Upload the full contents of this directory, including the `assets` folder, `bundle.wasm`, `client.html`, `index.html`, and `jaxxv6.user.js`.

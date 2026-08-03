@@ -2719,7 +2719,7 @@
                         }, {
                             key: "sendCursorPosition",
                             value: function(t, e, n) {
-                                if (this.authCompleted && this.clientId) {
+                                if (this.authCompleted) {
                                     var r = new W;
                                     r.writeUInt8(20), r.writeUInt8(this.spectate.enabled ? 1 : 0), 0 == this.spectate.enabled && r.writeUInt8(void 0 !== n ? n : this.activeTab), r.writeInt32(t), r.writeInt32(e), this.sendMessage(r)
                                 }
@@ -2727,7 +2727,7 @@
                         }, {
                             key: "sendSpawn",
                             value: function(t) {
-                                if (this.authCompleted && this.clientId && this.isDead) {
+                                if (this.authCompleted && this.isDead) {
                                     this.sendPlayerInfo();
                                     var e = new W;
                                     e.writeUInt8(0), e.writeUInt8(void 0 !== t ? t : this.activeTab), this.sendMessage(e)
@@ -2736,7 +2736,7 @@
                         }, {
                             key: "sendFeed",
                             value: function(t) {
-                                if (this.authCompleted && this.clientId) {
+                                if (this.authCompleted) {
                                     var e = new W;
                                     e.writeUInt8(23), e.writeUInt8(void 0 !== t ? t : this.activeTab), e.writeUInt8(Number(!1)), this.sendMessage(e)
                                 }
@@ -2746,7 +2746,7 @@
                             value: function() {
                                 var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : 1,
                                     e = arguments.length > 1 ? arguments[1] : void 0;
-                                if (this.authCompleted && this.clientId) {
+                                if (this.authCompleted) {
                                     var n = new W;
                                     n.writeUInt8(22), n.writeUInt8(void 0 !== e ? e : this.activeTab), n.writeUInt8(t), this.sendMessage(n)
                                 }
@@ -4172,13 +4172,17 @@ get: function() {
                                         var t = e.app.player.pendingConnections.indexOf(i); - 1 !== t && e.app.player.pendingConnections.splice(t, 1), e.app.toasts.show("".concat(i.type, " Tab Connected!"), "success", 2e3), e.hideReconnect()
                                     }), i.events.on("disconnected", function() {
                                         e.app.toasts.remove(o), i.logger.log("Disconnected.");
-                                        var t = e.app.player.pendingConnections.indexOf(i); - 1 !== t && e.app.player.pendingConnections.splice(t, 1), n.removeConnection(i), e.app.toasts.show("".concat(i.type, " Tab Disconnected"), "error", 2e3), 0 === n.length && 0 === e.app.player.pendingConnections.length && (e.isSwitchingServer || e.showReconnect()), e.app.player.chat && (e.app.player.chat.sendClientDead(i), e.app.player.chat.removeClient(i)), i.type
+                                        var t = e.app.player.pendingConnections.indexOf(i); - 1 !== t && e.app.player.pendingConnections.splice(t, 1), n.removeConnection(i), e.app.toasts.show("".concat(i.type, " Tab Disconnected"), "error", 2e3), 0 === n.length && 0 === e.app.player.pendingConnections.length && (e.isSwitchingServer || e.showReconnect()), e.app.player.chat && (e.app.player.chat.sendClientDead(i), e.app.player.chat.removeClient(i));
+                                        var r = document.getElementById("serverPlayerInfo");
+                                        r && (r.textContent = 0 === n.length ? "Disconnected" : "Connected"), i.type
                                     }), i.events.on("error", function(t) {
                                         e.app.toasts.remove(o), i.logger.error("Error:", t), e.app.toasts.show("Connection Error", "error", 3e3)
                                     }), i.events.on("captcha", function(t) {
                                         1 === t.type ? e.solveTurnstile(i) : e.app.toasts.show("".concat(i.type, " Tab - Needs unknown captcha (type: ").concat(t.type, ")"), "error", 5e3)
                                     }), i.events.on("ready", function() {
-                                        i.logger.log("Client Ready."), n.addConnection(i), e.app.player.chat && e.app.player.chat.registerClient(i)
+                                        i.logger.log("Client Ready."), n.addConnection(i), e.app.player.chat && e.app.player.chat.registerClient(i);
+                                        var t = document.getElementById("serverPlayerInfo");
+                                        t && (t.textContent = "Connected")
                                     }), i.events.on("spawned", function() {}), i.events.on("died", function() {
                                         var t = e.app.dualConnectionHandler.primary,
                                             n = e.app.dualConnectionHandler.secondary,

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         JaxxV6 for Senpa
 // @namespace    https://github.com/Shrkawyy/t3st
-// @version      6.0.1
+// @version      6.0.2
 // @description  Loads the JaxxV6 client on Senpa's official web origin.
 // @author       Shrkawyy
 // @match        https://senpa.io/web/*
@@ -20,7 +20,7 @@
 
   const DEFAULT_BASE_URL = 'https://shrkawyy.github.io/t3st/';
   const CLIENT_FILE = 'client.html';
-  const VERSION = '6.0.1';
+  const VERSION = '6.0.2';
 
   function normalizeBaseUrl(value) {
     try {
@@ -106,8 +106,10 @@
           if (name !== 'src' && name !== 'async' && name !== 'defer') script.setAttribute(name, value);
         }
         if (descriptor.source) {
+          const assetUrl = new URL(descriptor.source, baseUrl);
+          assetUrl.searchParams.set('v', VERSION);
           script.async = false;
-          script.src = descriptor.source;
+          script.src = assetUrl.href;
           script.addEventListener('load', resolve, { once: true });
           script.addEventListener('error', () => reject(new Error(`Failed to load ${descriptor.source}`)), { once: true });
         } else {

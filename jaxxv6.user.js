@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         JaxxV6 for Senpa
 // @namespace    https://github.com/Shrkawyy/t3st
-// @version      6.0.0
+// @version      6.0.1
 // @description  Loads the JaxxV6 client on Senpa's official web origin.
 // @author       Shrkawyy
 // @match        https://senpa.io/web/*
@@ -20,7 +20,7 @@
 
   const DEFAULT_BASE_URL = 'https://shrkawyy.github.io/t3st/';
   const CLIENT_FILE = 'client.html';
-  const VERSION = '6.0.0';
+  const VERSION = '6.0.1';
 
   function normalizeBaseUrl(value) {
     try {
@@ -38,38 +38,85 @@
   }
 
   function renderLoading() {
-    window.stop();
-    document.open();
-    document.write(`<!doctype html>
-      <html><head><meta charset="utf-8"><title>JaxxV6</title>
-      <style>
-        html,body{height:100%;margin:0;background:#07090d;color:#dce7f4;font:16px system-ui,sans-serif}
-        body{display:grid;place-items:center}.box{text-align:center}.spinner{width:34px;height:34px;margin:0 auto 16px;border:3px solid #263343;border-top-color:#41d9ff;border-radius:50%;animation:spin .8s linear infinite}
-        small{color:#7990a8}@keyframes spin{to{transform:rotate(360deg)}}
-      </style></head><body><div class="box"><div class="spinner"></div><div>Loading JaxxV6…</div><small>senpa.io · direct connection</small></div></body></html>`);
-    document.close();
+    const style = document.createElement('style');
+    style.id = 'jaxxv6-loading-style';
+    style.textContent = `
+      html{background:#07090d!important}
+      body{visibility:hidden!important}
+      html::before{content:'Loading JaxxV6...';position:fixed;z-index:2147483647;inset:0;display:grid;place-items:center;background:#07090d;color:#dce7f4;font:16px system-ui,sans-serif;visibility:visible}
+    `;
+    (document.head || document.documentElement).appendChild(style);
   }
 
   function renderError(message) {
-    document.open();
-    document.write(`<!doctype html><html><head><meta charset="utf-8"><title>JaxxV6 load error</title>
-      <style>html,body{height:100%;margin:0;background:#090b10;color:#e8eef6;font:16px system-ui,sans-serif}body{display:grid;place-items:center}.box{max-width:620px;padding:30px;border:1px solid #2a3645;border-radius:14px;background:#111721}h1{margin-top:0;color:#ff647c}code{color:#72e5ff}button{padding:10px 16px;border:0;border-radius:8px;cursor:pointer}</style>
-      </head><body><div class="box"><h1>JaxxV6 could not load</h1><p>${escapeHtml(message)}</p><p>Check that GitHub Pages is enabled for the <code>t3st</code> repository, then reload.</p><button onclick="location.reload()">Reload</button></div></body></html>`);
-    document.close();
+    window.stop();
+    document.title = 'JaxxV6 load error';
+    const head = document.createElement('head');
+    const body = document.createElement('body');
+    const style = document.createElement('style');
+    const box = document.createElement('div');
+    const title = document.createElement('h1');
+    const detail = document.createElement('p');
+    const help = document.createElement('p');
+    const reload = document.createElement('button');
+
+    style.textContent = 'html,body{height:100%;margin:0;background:#090b10;color:#e8eef6;font:16px system-ui,sans-serif}body{display:grid;place-items:center}.box{max-width:620px;padding:30px;border:1px solid #2a3645;border-radius:14px;background:#111721}h1{margin-top:0;color:#ff647c}button{padding:10px 16px;border:0;border-radius:8px;cursor:pointer}';
+    box.className = 'box';
+    title.textContent = 'JaxxV6 could not load';
+    detail.textContent = String(message);
+    help.textContent = 'Check that GitHub Pages is enabled for the t3st repository, then reload.';
+    reload.textContent = 'Reload';
+    reload.addEventListener('click', () => location.reload());
+    box.append(title, detail, help, reload);
+    head.appendChild(style);
+    body.appendChild(box);
+    document.documentElement.replaceChildren(head, body);
   }
 
-  function escapeHtml(value) {
-    return String(value).replace(/[&<>'"]/g, (char) => ({
-      '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
-    }[char]));
-  }
-
-  function prepareClientHtml(source, baseUrl) {
-    const bootstrap = `<base href="${baseUrl}">\n<script>window.__JAXXV6_BASE_URL=${JSON.stringify(baseUrl)};window.__JAXXV6_USERSCRIPT__=true;<\/script>`;
-    if (/<head(?:\s[^>]*)?>/i.test(source)) {
-      return source.replace(/<head(?:\s[^>]*)?>/i, (head) => `${head}\n${bootstrap}`);
+  async function mountClient(source, baseUrl) {
+    const parsed = new DOMParser().parseFromString(source, 'text/html');
+    if (!parsed.head || !parsed.body) {
+      throw new Error('client.html did not contain a complete HTML document.');
     }
-    return `${bootstrap}\n${source}`;
+
+    const scripts = Array.from(parsed.querySelectorAll('script'), (node) => ({
+      attributes: Array.from(node.attributes, (attribute) => [attribute.name, attribute.value]),
+      source: node.getAttribute('src'),
+      text: node.textContent || ''
+    }));
+    parsed.querySelectorAll('script').forEach((node) => node.remove());
+
+    window.stop();
+    const newHead = document.importNode(parsed.head, true);
+    const newBody = document.importNode(parsed.body, true);
+    const base = document.createElement('base');
+    base.href = baseUrl;
+    newHead.prepend(base);
+    document.documentElement.lang = parsed.documentElement.lang || 'en';
+    document.documentElement.replaceChildren(newHead, newBody);
+
+    const bootstrap = document.createElement('script');
+    bootstrap.textContent = `window.__JAXXV6_BASE_URL=${JSON.stringify(baseUrl)};window.__JAXXV6_USERSCRIPT__=true;`;
+    document.head.appendChild(bootstrap);
+
+    for (const descriptor of scripts) {
+      await new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        for (const [name, value] of descriptor.attributes) {
+          if (name !== 'src' && name !== 'async' && name !== 'defer') script.setAttribute(name, value);
+        }
+        if (descriptor.source) {
+          script.async = false;
+          script.src = descriptor.source;
+          script.addEventListener('load', resolve, { once: true });
+          script.addEventListener('error', () => reject(new Error(`Failed to load ${descriptor.source}`)), { once: true });
+        } else {
+          script.textContent = descriptor.text;
+        }
+        document.body.appendChild(script);
+        if (!descriptor.source) resolve();
+      });
+    }
   }
 
   const baseUrl = getBaseUrl();
@@ -80,14 +127,16 @@
     url: `${baseUrl}${CLIENT_FILE}?v=${encodeURIComponent(VERSION)}`,
     timeout: 15000,
     headers: { 'Cache-Control': 'no-cache' },
-    onload(response) {
+    async onload(response) {
       if (response.status < 200 || response.status >= 300) {
         renderError(`GitHub Pages returned HTTP ${response.status} for ${CLIENT_FILE}.`);
         return;
       }
-      document.open();
-      document.write(prepareClientHtml(response.responseText, baseUrl));
-      document.close();
+      try {
+        await mountClient(response.responseText, baseUrl);
+      } catch (error) {
+        renderError(error && error.message ? error.message : error);
+      }
     },
     ontimeout() {
       renderError('The GitHub Pages request timed out.');

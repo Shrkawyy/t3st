@@ -393,6 +393,7 @@
                         myNicknameColor: "rgba(255, 255, 255, 0.99)",
                         myMassColor: "rgba(255, 255, 255, 0.99)",
                         themeMultiboxRingWidth: 10,
+                        showMultiboxRings: !0,
                         themeMultiboxRingColor: "#00B9E8",
                         themeMultiboxRingColorInactive: "#FFFFFF",
                         themeMultiboxCellColor: "#00B9E8",
@@ -6039,7 +6040,7 @@ if (isMyCell && !t.flags.isFood && !t.flags.isVirus && !t.flags.isEject) {
                             this.ctx.fill();
                             this.ctx.restore();
                         }
-                    } else {
+                    } else if (this.settings.showMultiboxRings) {
                         var v = this.settings.themeMultiboxRingWidth;
                         this.ctx.lineWidth = t.r / 100 * v, this.ctx.strokeStyle = y ? this.settings.themeMultiboxRingColor : this.settings.themeMultiboxRingColorInactive;
                         var g = t.r - (this.ctx.lineWidth >> 1);
@@ -11551,6 +11552,8 @@ value: function(t, e) {
                                 return t
                             })), r.appendChild(this.createSlider("Border Line Width", "Thickness of the map border", 2, 200, n.themeBorderWidth, function(t) {
                                 return e.settings.set("themeBorderWidth", t)
+                            })), r.appendChild(this.createToggle("Show Multibox Rings", "Draw active and inactive tab indicators around your cells", n.showMultiboxRings, function(t) {
+                                return e.settings.set("showMultiboxRings", t)
                             })), r.appendChild(this.createSlider("Multibox Ring Width", "Thickness of active tab indicator", 2, 50, n.themeMultiboxRingWidth, function(t) {
                                 return e.settings.set("themeMultiboxRingWidth", t)
                             })), r.appendChild(this.createColorPicker("Multibox Ring Color", "Active tab indicator", n.themeMultiboxRingColor, function(t) {

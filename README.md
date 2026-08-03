@@ -4,17 +4,17 @@ JaxxV6 is a GitHub Pages-hosted Tampermonkey build of the custom Senpa client. T
 
 ## Publish
 
-1. Create a public GitHub repository named `jaxxv6` under the `Shrkawyy` account.
+1. Use the `t3st` repository under the `Shrkawyy` account.
 2. Upload every file and folder in this directory to the repository root.
 3. In GitHub, open **Settings → Pages**.
 4. Choose **Deploy from a branch**, then select **main** and **/(root)**.
-5. Wait for `https://shrkawyy.github.io/jaxxv6/` to become available.
+5. Wait for `https://shrkawyy.github.io/t3st/` to become available.
 
 If the GitHub username or repository name changes, update `DEFAULT_BASE_URL`, `@updateURL`, `@downloadURL`, `@connect`, and `@namespace` in `jaxxv6.user.js`.
 
 ## Install
 
-Open `https://shrkawyy.github.io/jaxxv6/` and click **Install Tampermonkey script**. Then visit `https://senpa.io/web/`.
+Open `https://shrkawyy.github.io/t3st/` and click **Install Tampermonkey script**. Then visit `https://senpa.io/web/`.
 
 ## Important
 

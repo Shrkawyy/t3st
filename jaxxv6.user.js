@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JaxxV6 for Senpa
-// @namespace    https://github.com/Shrkawyy/jaxxv6
+// @namespace    https://github.com/Shrkawyy/t3st
 // @version      6.0.0
 // @description  Loads the JaxxV6 client on Senpa's official web origin.
 // @author       Shrkawyy
@@ -11,14 +11,14 @@
 // @grant        GM_info
 // @connect      shrkawyy.github.io
 // @noframes
-// @updateURL    https://shrkawyy.github.io/jaxxv6/jaxxv6.user.js
-// @downloadURL  https://shrkawyy.github.io/jaxxv6/jaxxv6.user.js
+// @updateURL    https://shrkawyy.github.io/t3st/jaxxv6.user.js
+// @downloadURL  https://shrkawyy.github.io/t3st/jaxxv6.user.js
 // ==/UserScript==
 
 (function () {
   'use strict';
 
-  const DEFAULT_BASE_URL = 'https://shrkawyy.github.io/jaxxv6/';
+  const DEFAULT_BASE_URL = 'https://shrkawyy.github.io/t3st/';
   const CLIENT_FILE = 'client.html';
   const VERSION = '6.0.0';
 
@@ -54,7 +54,7 @@
     document.open();
     document.write(`<!doctype html><html><head><meta charset="utf-8"><title>JaxxV6 load error</title>
       <style>html,body{height:100%;margin:0;background:#090b10;color:#e8eef6;font:16px system-ui,sans-serif}body{display:grid;place-items:center}.box{max-width:620px;padding:30px;border:1px solid #2a3645;border-radius:14px;background:#111721}h1{margin-top:0;color:#ff647c}code{color:#72e5ff}button{padding:10px 16px;border:0;border-radius:8px;cursor:pointer}</style>
-      </head><body><div class="box"><h1>JaxxV6 could not load</h1><p>${escapeHtml(message)}</p><p>Check that GitHub Pages is enabled for the <code>jaxxv6</code> repository, then reload.</p><button onclick="location.reload()">Reload</button></div></body></html>`);
+      </head><body><div class="box"><h1>JaxxV6 could not load</h1><p>${escapeHtml(message)}</p><p>Check that GitHub Pages is enabled for the <code>t3st</code> repository, then reload.</p><button onclick="location.reload()">Reload</button></div></body></html>`);
     document.close();
   }
 

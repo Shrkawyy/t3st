@@ -1202,7 +1202,7 @@ document.addEventListener('keydown', function(e) {
   /* ══════════════════════════════════════════════════════════
      DOMContentLoaded wiring
   ══════════════════════════════════════════════════════════ */
-  document.addEventListener('DOMContentLoaded', function () {
+  function wireClientUi() {
 
     /* Restore & wire inputs */
     restoreSavedInputs();
@@ -1226,6 +1226,7 @@ document.addEventListener('keydown', function(e) {
     var playBtn = document.getElementById('btnMenu');
     if (playBtn) {
       playBtn.addEventListener('click', function () {
+        console.log('[JaxxV6 UI] Play requested');
         syncNick1(); syncNick2(); syncSkins(); syncTag();
         var bp = document.querySelector('.btn-play');
         if (bp) bp.click();
@@ -1236,6 +1237,7 @@ document.addEventListener('keydown', function(e) {
     var specBtn = document.getElementById('btnSpectate');
     if (specBtn) {
       specBtn.addEventListener('click', function () {
+        console.log('[JaxxV6 UI] Spectate requested');
         var bs = document.querySelector('.btn-spectate');
         if (bs) bs.click();
       });
@@ -1493,7 +1495,13 @@ document.addEventListener('keydown', function(e) {
       } catch (_) {}
     }, 2000);
 
-  }); /* end DOMContentLoaded */
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', wireClientUi, { once: true });
+  } else {
+    wireClientUi();
+  }
 
 })();
 </script>

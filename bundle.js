@@ -2730,7 +2730,7 @@
                                 if (this.authCompleted && this.isDead) {
                                     this.sendPlayerInfo();
                                     var e = new W;
-                                    e.writeUInt8(0), e.writeUInt8(void 0 !== t ? t : this.activeTab), this.sendMessage(e)
+                                    e.writeUInt8(0), e.writeUInt8(void 0 !== t ? t : this.activeTab), this.logger.log("[Action] Sending spawn for tab", void 0 !== t ? t : this.activeTab), this.sendMessage(e)
                                 }
                             }
                         }, {
@@ -2754,7 +2754,7 @@
                         }, {
                             key: "sendSpectate",
                             value: function() {
-                                this.isDead && (this.spectate.enabled = !0)
+                                this.isDead && (this.spectate.enabled = !0, this.logger.log("[Action] Spectate enabled"))
                             }
                         }, {
                             key: "sendPing",

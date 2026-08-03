@@ -5744,8 +5744,9 @@ le = function() {
                                 var s = this.settings.macroFeedInterval;
                                 if (e >= this.nextMacroTime) {
                                     this.nextMacroTime += s;
-                                    var c = this.app.dualConnectionHandler.current;
-                                    c && c.sendFeed()
+                                    this.app.dualConnectionHandler.forEachClient(function(t) {
+                                        t.isAlive && t.sendFeed()
+                                    })
                                 }
                             } else this.nextMacroTime = e;
                             e >= this.nextSendCursorTime && (this.nextSendCursorTime += this.settings.sendCursorInterval, this.sendCursorPosition()), e >= this.nextCacheCleanupTime && (this.nextCacheCleanupTime = e + this.settings.cacheCleanupInterval, this.texts.clearCache(e)), this.updateCameraBound(), this.updateCamera();
@@ -6786,16 +6787,24 @@ value: function(t, e) {
                                 var e = this.app.dualConnectionHandler.current;
                                 if (e) switch (t) {
                                     case "split":
-                                        e.sendSplit();
+                                        this.app.dualConnectionHandler.forEachClient(function(t) {
+                                            t.isAlive && t.sendSplit()
+                                        });
                                         break;
                                     case "doubleSplit":
-                                        e.sendSplit(2);
+                                        this.app.dualConnectionHandler.forEachClient(function(t) {
+                                            t.isAlive && t.sendSplit(2)
+                                        });
                                         break;
                                     case "tripleSplit":
-                                        e.sendSplit(3);
+                                        this.app.dualConnectionHandler.forEachClient(function(t) {
+                                            t.isAlive && t.sendSplit(3)
+                                        });
                                         break;
                                     case "maxSplit":
-                                        e.sendSplit(4);
+                                        this.app.dualConnectionHandler.forEachClient(function(t) {
+                                            t.isAlive && t.sendSplit(4)
+                                        });
                                         break;
                                     case "switchPlayer":
                                         this.app.lobby.swapTabs();
@@ -11581,7 +11590,7 @@ value: function(t, e) {
                                 r = document.createElement("div");
                             r.classList.add("settings-section", "active");
                             var i = document.createElement("div");
-                            i.style.textAlign = "center", i.style.color = "#666", i.style.marginBottom = "20px", i.style.fontSize = "14px", i.textContent = "Click to rebind. Press ESC to cancel. Press DELETE to clear.", r.appendChild(i);
+                            i.style.textAlign = "center", i.style.color = "#666", i.style.marginBottom = "20px", i.style.fontSize = "14px", i.textContent = "Bind each action once. Split and Feed control all connected player cells. Press ESC to cancel or DELETE to clear.", r.appendChild(i);
                             var o = document.createElement("button");
                             o.className = "keybind-btn", o.style.marginBottom = "20px", o.style.width = "100%", o.style.padding = "12px", o.textContent = "RESET TO DEFAULTS", o.onclick = function() {
                                 e.input.resetToDefaults(), e.updateKeybindDisplay()
@@ -11633,7 +11642,7 @@ value: function(t, e) {
                                     }
                                 }(), o.appendChild(a), o.appendChild(c), r.appendChild(o)
                             };
-                            a("Feed (Macro)", "macroFeed"), a("Split", "split"), a("Double Split", "doubleSplit"), a("Triple Split", "tripleSplit"), a("Max Split", "maxSplit"), a("Switch Tab", "switchPlayer"), a("Pause", "pause"), a("Spectate Control", "spectateControl"), a("Bot Split", "botSplit"), a("Bot Feed", "botFeed"), a("Toggle Skins", "toggleSkins"), a("Clear Chat", "clearChat"), a("Toggle Chat", "toggleChat"), a("Toggle Minimap", "toggleMinimap"), a("Toggle Stats", "toggleStats"), a("Toggle Leaderboard", "toggleLeaderboard"), a("Toggle HUD", "toggleHUD"), a("Toggle Own Names", "toggleMyNames"), a("Toggle Own Mass", "toggleMyMass"), a("Send Wave", "sendWave"), null === (t = this.content) || void 0 === t || t.appendChild(r)
+                            a("Feed (Macro) - All Cells", "macroFeed"), a("Split - All Cells", "split"), a("Double Split - All Cells", "doubleSplit"), a("Triple Split - All Cells", "tripleSplit"), a("Max Split - All Cells", "maxSplit"), a("Switch View", "switchPlayer"), a("Pause", "pause"), a("Spectate Control", "spectateControl"), a("Toggle Skins", "toggleSkins"), a("Clear Chat", "clearChat"), a("Toggle Chat", "toggleChat"), a("Toggle Minimap", "toggleMinimap"), a("Toggle Stats", "toggleStats"), a("Toggle Leaderboard", "toggleLeaderboard"), a("Toggle HUD", "toggleHUD"), a("Toggle Own Names", "toggleMyNames"), a("Toggle Own Mass", "toggleMyMass"), a("Send Wave", "sendWave"), null === (t = this.content) || void 0 === t || t.appendChild(r)
                         }
                     }, {
                         key: "updateKeybindDisplay",

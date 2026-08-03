@@ -4180,7 +4180,7 @@ get: function() {
                                     }), i.events.on("captcha", function(t) {
                                         1 === t.type ? e.solveTurnstile(i) : e.app.toasts.show("".concat(i.type, " Tab - Needs unknown captcha (type: ").concat(t.type, ")"), "error", 5e3)
                                     }), i.events.on("ready", function() {
-                                        i.logger.log("Client Ready."), n.addConnection(i), e.app.player.chat && e.app.player.chat.registerClient(i);
+                                        i.logger.log("Client Ready."), n.addConnection(i), i.sendSpectate(), e.app.player.chat && e.app.player.chat.registerClient(i);
                                         var t = document.getElementById("serverPlayerInfo");
                                         t && (t.textContent = "Connected")
                                     }), i.events.on("spawned", function() {}), i.events.on("died", function() {

@@ -434,8 +434,13 @@
         var box = document.getElementById('ryu-chat-box');
         if (box) {
           var r = box.getBoundingClientRect();
+          // #ryu-chat-box is anchored to the bottom of the screen (bottom: 10px),
+          // so r.bottom sits right at the edge of the viewport. Anchoring the
+          // picker's *top* there pushed it off-screen below the fold.
+          // Anchor it by `bottom` instead so it opens upward, above the chat box.
           picker.style.left = r.left + 'px';
-          picker.style.top = (r.bottom + 6) + 'px';
+          picker.style.top = 'auto';
+          picker.style.bottom = (window.innerHeight - r.top + 6) + 'px';
         }
       }
       picker.classList.toggle('open', emojiPickerOpen);

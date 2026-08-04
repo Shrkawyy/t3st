@@ -21,6 +21,14 @@
     { id: 'shield13', name: 'Shield 13', file: 'assets/shield/shield13.webp' },
     { id: 'shield14', name: 'Shield 14', file: 'assets/shield/shield14.webp' },
     { id: 'shield15', name: 'Shield 15', file: 'assets/shield/shield15.webp' },
+    { id: 'shield16', name: 'Shield 16', file: 'assets/shield/shield16.webp' },
+    { id: 'shield17', name: 'Shield 17', file: 'assets/shield/shield17.webp' },
+    { id: 'shield18', name: 'Shield 18', file: 'assets/shield/shield18.webp' },
+    { id: 'shield19', name: 'Shield 19', file: 'assets/shield/shield19.webp' },
+    { id: 'shield20', name: 'Shield 20', file: 'assets/shield/shield20.webp' },
+    { id: 'shield21', name: 'Shield 21', file: 'assets/shield/shield21.webp' },
+    { id: 'shield22', name: 'Shield 22', file: 'assets/shield/shield22.webp' },
+    { id: 'shield23', name: 'Shield 23', file: 'assets/shield/shield23.webp' },
 
   ];
 

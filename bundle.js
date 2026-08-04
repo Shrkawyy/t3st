@@ -4143,7 +4143,7 @@ get: function() {
                         key: "updateChatRoom",
                         value: function() {
                             var t = "";
-                            if ("wss://eu1.senpa.io:2053" === this.app.player.serverUrl && (t = "wss://eu.mi.com:2001"), "wss://us.senpa.io:2001" === this.app.player.serverUrl && (t = "wss://us.mi.com:2001"), this.app.player.chat && this.app.player.chat.isConnected) {
+                            if ("wss://eu1.senpa.io:7101" === this.app.player.serverUrl && (t = "wss://eu.mi.com:2001"), "wss://us.senpa.io:2001" === this.app.player.serverUrl && (t = "wss://us.mi.com:2001"), this.app.player.chat && this.app.player.chat.isConnected) {
                                 var e = this.tokenFromUrl(t),
                                     n = this.app.player.tag;
                                 this.app.player.chat.enterRoom(e, n, "", ":party", "")

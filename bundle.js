@@ -632,7 +632,7 @@
                         }(this, t), this.chat = null, this.pendingConnections = [], this.logger = new S({
                             prefix: "Player",
                             color: "#2196F3"
-                        }), this.tag = "", this.nickname1 = "", this.nickname2 = "", this.skin1 = "", this.skin2 = "", this.serverUrl = "wss://eu1.senpa.io:2053", this.chat = null, this.pendingConnections = []
+                        }), this.tag = "", this.nickname1 = "", this.nickname2 = "", this.skin1 = "", this.skin2 = "", this.serverUrl = "wss://eu1.senpa.io:7101", this.chat = null, this.pendingConnections = []
                     }),
                     T = n(458);
 

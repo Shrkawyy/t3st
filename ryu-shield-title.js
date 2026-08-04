@@ -19,6 +19,8 @@
     { id: 'shield11', name: 'Shield 11', file: 'assets/shield/shield11.webp' },
     { id: 'shield12', name: 'Shield 12', file: 'assets/shield/shield12.webp' },
     { id: 'shield13', name: 'Shield 13', file: 'assets/shield/shield13.webp' },
+    { id: 'shield14', name: 'Shield 14', file: 'assets/shield/shield14.webp' },
+    { id: 'shield15', name: 'Shield 15', file: 'assets/shield/shield15.webp' },
 
   ];
 

@@ -2484,8 +2484,14 @@
                         }, {
                             key: "sendAuth",
                             value: function() {
+                                var e = "null";
+                                try {
+                                    var n = localStorage.getItem("senpaio:session");
+                                    /^[\w-]+\.[\w-]+\.[\w-]+$/.test(n || "") && (e = n);
+                                } catch (_) {}
+                                this.logger.log("[Auth] Sending session token: " + ("null" === e ? "none" : "present"));
                                 var t = new W;
-                                t.writeUInt8(13), t.writeUInt16(4), t.writeUTF16String("null"), this.sendMessage(t)
+                                t.writeUInt8(13), t.writeUInt16(e.length), t.writeUTF16String(e), this.sendMessage(t)
                             }
                         }, {
                             key: "updatePlayerClients",

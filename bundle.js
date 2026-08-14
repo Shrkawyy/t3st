@@ -2259,7 +2259,7 @@
                                         case 3:
                                             return t.n = 4, this.initiate();
                                         case 4:
-                                            this.connectionStartTime = Date.now(), this.probePromise = null, this.probeUrl = e, this.logger.log("[Connection] Connecting to ".concat(e, "...")), this.socket = this.module.create(e, function() {
+                                            this.connectionStartTime = Date.now(), this.probePromise = null, this.probeUrl = e, this.logger.log("[Connection] Connecting to ".concat(e, "...")), this.socket = this.module.create(addSenpaConnectionParams(e), function() {
                                                 var t = Date.now() - r.connectionStartTime;
                                                 r.logger.log("[Connection] Connected successfully in ".concat(t, "ms")), r.onOpen()
                                             }, yt(ht().m(function t() {
@@ -10399,7 +10399,7 @@ value: function(t, e) {
                                         }
                                         return t.n = 3, this.initiate();
                                     case 3:
-                                        this.socket = this.module.create(e, this.onOpen.bind(this), this.onClose.bind(this), this.onMessage.bind(this), this.onError.bind(this)), t.n = 5;
+                                        this.socket = this.module.create(addSenpaConnectionParams(e), this.onOpen.bind(this), this.onClose.bind(this), this.onMessage.bind(this), this.onError.bind(this)), t.n = 5;
                                         break;
                                     case 4:
                                         t.p = 4, n = t.v, this.logger.error("Failed to initiate WASM module:", n);
@@ -12241,6 +12241,24 @@ value: function(t, e) {
                         return String(t)
                     }(t);
                     return "symbol" == Wn(e) ? e : e + ""
+                }
+                function addSenpaConnectionParams(t) {
+                    try {
+                        var e = new URL(t), n = location.host || "unknown";
+                        if (window.self !== window.top) {
+                            try { n = "iframe:" + (document.referrer ? new URL(document.referrer).host : "unknown"); } catch (_) { n = "iframe:unknown"; }
+                        }
+                        e.searchParams.has("po") || e.searchParams.set("po", n);
+                        if (!e.searchParams.has("tid")) {
+                            var r = localStorage.getItem("senpaio:tid");
+                            if (!r) {
+                                r = crypto.randomUUID ? crypto.randomUUID() : ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, function(t) { return (t ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> t / 4).toString(16); });
+                                localStorage.setItem("senpaio:tid", r);
+                            }
+                            e.searchParams.set("tid", r);
+                        }
+                        return e.toString();
+                    } catch (_) { return t; }
                 }
                 var Gn, zn = Hn(function t() {
                     var e = this;

@@ -12,21 +12,42 @@
   var pending = new WeakMap();
   var sequence = 0;
 
+  function ensureTurnstileScript() {
+    if (window.turnstile && typeof window.turnstile.render === 'function') {
+      return Promise.resolve();
+    }
+
+    var existing = document.querySelector('script[src*="challenges.cloudflare.com/turnstile/v0/api.js"]');
+    if (existing) return Promise.resolve();
+
+    return new Promise(function (resolve, reject) {
+      var script = document.createElement('script');
+      script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
+      script.async = true;
+      script.defer = true;
+      script.onload = resolve;
+      script.onerror = function () { reject(new Error('Cloudflare Turnstile could not be loaded.')); };
+      (document.head || document.documentElement).appendChild(script);
+    });
+  }
+
   function waitForTurnstile(timeoutMs) {
     timeoutMs = timeoutMs || 15000;
-    return new Promise(function (resolve, reject) {
-      var started = Date.now();
-      (function poll() {
-        if (window.turnstile && typeof window.turnstile.render === 'function') {
-          resolve(window.turnstile);
-          return;
-        }
-        if (Date.now() - started >= timeoutMs) {
-          reject(new Error('Cloudflare Turnstile did not load. Disable script blockers and reload Senpa.io.'));
-          return;
-        }
-        window.setTimeout(poll, 100);
-      })();
+    return ensureTurnstileScript().then(function () {
+      return new Promise(function (resolve, reject) {
+        var started = Date.now();
+        (function poll() {
+          if (window.turnstile && typeof window.turnstile.render === 'function') {
+            resolve(window.turnstile);
+            return;
+          }
+          if (Date.now() - started >= timeoutMs) {
+            reject(new Error('Cloudflare Turnstile did not load. Disable script blockers and reload Senpa.io.'));
+            return;
+          }
+          window.setTimeout(poll, 100);
+        })();
+      });
     });
   }
 

@@ -20,9 +20,11 @@ Open `https://shrkawyy.github.io/t3st/` and click **Install Tampermonkey script*
 
 - Do not deploy the old `server.js`, `api/game-socket.js`, or `vercel.json` files. This build does not proxy the game WebSocket.
 - Do not open `client.html` directly; it is loaded by the userscript.
-- Browser data, including the client device ID, belongs to the `senpa.io` origin in this version. A key previously bound on another origin may not be reusable. Do not publish private keys in the repository.
+- Browser data, including the client device ID and `senpaio:session`, belongs to the `senpa.io` origin in this version. A key previously bound on another origin may not be reusable. Do not publish private keys or session tokens in the repository.
+- The authentication fix loads Cloudflare Turnstile from its official origin and asks the user to complete the challenge. It does not fabricate tokens or use third-party CAPTCHA-solving services.
+- The account panel opens Senpa's current OAuth endpoints for Discord and Facebook. Complete login in the popup and return to the game tab.
 - Only use this client in ways allowed by Senpa's rules.
 
 ## Files to upload
 
-Upload the full contents of this directory, including the `assets` folder, `bundle.wasm`, `client.html`, `index.html`, and `jaxxv6.user.js`.
+Upload the full contents of this directory, including the `assets` folder, `bundle.wasm`, `client.html`, `auth-session-bridge.js`, `auth-bridge.js`, `index.html`, and `jaxxv6.user.js`. The patched `bundle.js` must be uploaded as well.

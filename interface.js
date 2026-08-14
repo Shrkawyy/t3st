@@ -509,7 +509,25 @@
 
   // login check
   function ryuIsLoggedIn() {
-    try { return (globalThis.__Be && globalThis.__Be._1059._4652 !== 0); } catch(e) { return true; }
+    try {
+      if (localStorage.getItem('senpaio:session')) return true;
+      return !!(globalThis.__Be && globalThis.__Be._1059 && globalThis.__Be._1059._4652 !== 0);
+    } catch(e) { return false; }
+  }
+
+  function ryuWireAuthButton(id) {
+    var button = document.getElementById(id);
+    if (!button || button.dataset.ryuAuthBound === '1') return;
+    button.dataset.ryuAuthBound = '1';
+    button.addEventListener('click', function (event) {
+      event.preventDefault();
+      var provider = button.getAttribute('data-auth-provider') || 'discord';
+      if (typeof globalThis.__JAXXV6_OPEN_AUTH__ === 'function') {
+        globalThis.__JAXXV6_OPEN_AUTH__(provider);
+      } else {
+        window.open(provider === 'facebook' ? 'https://api.senpa.io/auth/facebook' : 'https://api.senpa.io/auth/discord', '_blank', 'width=600,height=700');
+      }
+    });
   }
 
   function ryuSuppressNativeLoginNotif() {
@@ -608,7 +626,7 @@
             <div class="ryu-trb-sg-val" id="ryu-trb-val-rp">${rp}</div>
           </div>
         </div>
-        ${isGuest ? `<a id="ryu-trb-login-btn" href="${loginHref}">Login</a>` : ''}
+        ${isGuest ? `<div style="display:flex;gap:6px;flex-direction:column;"><button type="button" id="ryu-trb-login-btn" data-auth-provider="discord">Login with Discord</button><button type="button" id="ryu-trb-login-btn-facebook" data-auth-provider="facebook" style="display:block;width:100%;text-align:center;font:300 12px 'Titillium Web',sans-serif;letter-spacing:1px;text-transform:uppercase;color:#fff;background:rgba(24,119,242,.72);padding:10px;border-radius:7px;border:1px solid rgba(255,255,255,.14);cursor:pointer;">Login with Facebook</button></div>` : ''}
       </div>
 
       <!-- Nav -->
@@ -636,6 +654,8 @@
     backdrop.id = 'ryu-menu-backdrop';
     document.body.appendChild(backdrop);
     document.body.appendChild(panel);
+    ryuWireAuthButton('ryu-trb-login-btn');
+    ryuWireAuthButton('ryu-trb-login-btn-facebook');
 
     // Wire nav buttons
     function wireBtn(panelId, nativeId) {
@@ -1628,7 +1648,7 @@
     var rp          = rpEl       ? rpEl.textContent.trim()       : '0 RP';
     var rank        = rankEl     ? rankEl.textContent.trim()     : 'UNRANKED';
     var loginHref   = loginEl    ? loginEl.getAttribute('href')  : 'https://account.ryuten.io';
-    var isGuest     = !!loginEl;
+    var isGuest     = loginEl ? true : !ryuIsLoggedIn();
     var avatarChar  = username.charAt(0).toUpperCase();
     var acctAvatar  = loadTheme().accountAvatar || '';
 
@@ -1764,7 +1784,7 @@
             '</div>',
           '</div>',
           '<div class="ryu-acct-actions">',
-            (isGuest ? '<a class="ryu-acct-btn primary" id="ryu-menu-acct-login" href="' + loginHref + '">⚡ LOGIN</a>' : ''),
+            (isGuest ? '<button type="button" class="ryu-acct-btn primary" id="ryu-menu-acct-login" data-auth-provider="discord">⚡ LOGIN WITH DISCORD</button><button type="button" class="ryu-acct-btn secondary" id="ryu-menu-acct-login-facebook" data-auth-provider="facebook">LOGIN WITH FACEBOOK</button>' : ''),
             '<button class="ryu-acct-btn secondary" id="ryu-menu-acct-shop">🏪 SHOP</button>',
             '<button class="ryu-acct-btn secondary" id="ryu-menu-acct-inventory">📦 INVENTORY</button>',
             '<button class="ryu-acct-btn secondary" id="ryu-menu-acct-replays">▶ REPLAYS</button>',
@@ -1777,6 +1797,8 @@
     ].join('');
 
     document.body.appendChild(panel);
+    ryuWireAuthButton('ryu-menu-acct-login');
+    ryuWireAuthButton('ryu-menu-acct-login-facebook');
     if (globalThis.__ryuPositionTeamBox) globalThis.__ryuPositionTeamBox();
 
     // load skin images from game state

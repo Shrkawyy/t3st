@@ -3918,7 +3918,7 @@ get: function() {
                         var n = this;
                         ! function(t, e) {
                             if (!(t instanceof e)) throw new TypeError("Cannot call a class as a function")
-                        }(this, t), this.menuElement = null, this.overlayElement = null, this.reconnectOverlay = null, this.btnReconnect = null, this.btnMenu = null, this.isVisible = !0, this.isSwitchingServer = !1, this.currentProfile = 1, this.antiCaptchaKey = "e84ec2d61fb8c66deb62faa851762eb9", this.captchaApiKey = "7bdcf099021a4412147b0f664c3c3eb4", this.captchaSiteKey = "0x4AAAAAAACWFDYFT_opGqX8", this.app = e, this.logger = new S({
+                        }(this, t), this.menuElement = null, this.overlayElement = null, this.reconnectOverlay = null, this.btnReconnect = null, this.btnMenu = null, this.isVisible = !0, this.isSwitchingServer = !1, this.currentProfile = 1, this.captchaSiteKey = "0x4AAAAAAACWFDYFT_opGqX8", this.app = e, this.logger = new S({
                             prefix: "Lobby",
                             color: "#FF9800"
                         }), this.menuElement = document.querySelector(".lobby-menu"), this.overlayElement = document.querySelector(".lobby-overlay"), this.skinsMenu = new Et(e), this.reconnectOverlay = document.getElementById("reconnectOverlay"), this.btnReconnect = document.getElementById("btnReconnect"), this.btnMenu = document.getElementById("btnMenu"), this.initMenuButtons(), this.initReconnectButtons(), this.initInputs(), this.initServerSelect(), this.initProfileSelector(), this.loadGlobalState(), window.addEventListener("resize", function() {
@@ -3942,165 +3942,15 @@ get: function() {
                     }, e = [{
                         
                         key: "solveTurnstile",
-                        value: (r = Ht(Rt().m(function t(e) {
-                            var n, r, i, o, a, s, c, l, u, h, f, d, p, y = this;
-                            return Rt().w(function(t) {
-                                for (;;) switch (t.p = t.n) {
-                                    case 0:
-                                        return n = this.app.toasts.show("".concat(e.type, " Tab: Creating 2Captcha task..."), "info", 0), r = n.querySelector("span"), i = n.querySelector("i"), o = function(t, e) {
-                                            r && (r.textContent = t), i && (i.className = "fa-solid ".concat("success" === e ? "fa-circle-check" : "error" === e ? "fa-triangle-exclamation" : "fa-circle-info")), "success" === e && (n.style.borderLeft = "4px solid #00ff88"), "error" === e && (n.style.borderLeft = "4px solid #ff4444"), "info" === e && (n.style.borderLeft = "4px solid #00b9e8")
-                                        }, t.p = 1, a = "https://2captcha.com/in.php?key=".concat(this.captchaApiKey, "&method=turnstile&sitekey=").concat(this.captchaSiteKey, "&pageurl=").concat(encodeURIComponent("https://senpa.io/"), "&json=1&header_acao=1"), t.n = 2, fetch(a);
-                                    case 2:
-                                        return s = t.v, t.n = 3, s.json();
-                                    case 3:
-                                        if (1 === (c = t.v).status) {
-                                            t.n = 4;
-                                            break
-                                        }
-                                        return o("2Captcha Error: ".concat(c.request), "error"), setTimeout(function() {
-                                            return y.app.toasts.remove(n)
-                                        }, 5e3), t.a(2);
-                                    case 4:
-                                        l = c.request, o("".concat(e.type, " Tab: Solving Captcha..."), "info"), u = "https://2captcha.com/res.php?key=".concat(this.captchaApiKey, "&action=get&id=").concat(l, "&json=1&header_acao=1");
-                                    case 5:
-                                        return t.n = 6, new Promise(function(t) {
-                                            return setTimeout(t, 5e3)
-                                        });
-                                    case 6:
-                                        if (e.isConnected) {
-                                            t.n = 7;
-                                            break
-                                        }
-                                        return this.app.toasts.remove(n), t.a(2);
-                                    case 7:
-                                        return t.n = 8, fetch(u);
-                                    case 8:
-                                        return h = t.v, t.n = 9, h.json();
-                                    case 9:
-                                        if (1 !== (f = t.v).status) {
-                                            t.n = 10;
-                                            break
-                                        }
-                                        return d = f.request, e.sendCaptcha(1, d), o("".concat(e.type, " Tab: Captcha Solved!"), "success"), setTimeout(function() {
-                                            return y.app.toasts.remove(n)
-                                        }, 3e3), t.a(3, 12);
-                                    case 10:
-                                        if ("CAPCHA_NOT_READY" === f.request) {
-                                            t.n = 11;
-                                            break
-                                        }
-                                        return o("2Captcha Error: ".concat(f.request), "error"), setTimeout(function() {
-                                            return y.app.toasts.remove(n)
-                                        }, 5e3), t.a(3, 12);
-                                    case 11:
-                                        t.n = 5;
-                                        break;
-                                    case 12:
-                                        t.n = 14;
-                                        break;
-                                    case 13:
-                                        t.p = 13, p = t.v, o("Captcha Network Error", "error"), setTimeout(function() {
-                                            return y.app.toasts.remove(n)
-                                        }, 5e3), this.logger.error("2Captcha solve failed:", p);
-                                    case 14:
-                                        return t.a(2)
-                                }
-                            }, t, this, [
-                                [1, 13]
-                            ])
-                        })), function(t) {
-                            return r.apply(this, arguments)
-                        })
+                        value: function(t) {
+                            var e = this;
+                            if (window.__JAXXV6_NATIVE_CAPTCHA__) {
+                                return window.__JAXXV6_NATIVE_CAPTCHA__(t, e.app);
+                            }
+                            e.app.toasts.show("Cloudflare verification is unavailable. Please reload Senpa.io.", "error", 5e3);
+                            return Promise.resolve();
+                        }
                     }, {
-                        key: "solveAntiCaptcha",
-                        value: (n = Ht(Rt().m(function t(e) {
-                            var n, r, i, o, a, s, c, l, u, h, f, d = this;
-                            return Rt().w(function(t) {
-                                for (;;) switch (t.p = t.n) {
-                                    case 0:
-                                        return n = this.app.toasts.show("".concat(e.type, " Tab: Creating Anti-Captcha task..."), "info", 0), r = n.querySelector("span"), i = n.querySelector("i"), o = function(t, e) {
-                                            r && (r.textContent = t), i && (i.className = "fa-solid ".concat("success" === e ? "fa-circle-check" : "error" === e ? "fa-triangle-exclamation" : "fa-circle-info")), "success" === e && (n.style.borderLeft = "4px solid #00ff88"), "error" === e && (n.style.borderLeft = "4px solid #ff4444"), "info" === e && (n.style.borderLeft = "4px solid #00b9e8")
-                                        }, t.p = 1, t.n = 2, fetch("https://api.anti-captcha.com/createTask", {
-                                            method: "POST",
-                                            body: JSON.stringify({
-                                                clientKey: this.antiCaptchaKey,
-                                                task: {
-                                                    type: "TurnstileTaskProxyless",
-                                                    websiteURL: "https://senpa.io/",
-                                                    websiteKey: this.captchaSiteKey
-                                                }
-                                            })
-                                        });
-                                    case 2:
-                                        return a = t.v, t.n = 3, a.json();
-                                    case 3:
-                                        if (0 === (s = t.v).errorId) {
-                                            t.n = 4;
-                                            break
-                                        }
-                                        return o("Anti-Captcha Error: ".concat(s.errorDescription), "error"), setTimeout(function() {
-                                            return d.app.toasts.remove(n)
-                                        }, 5e3), t.a(2);
-                                    case 4:
-                                        c = s.taskId, o("".concat(e.type, " Tab: Anti-Captcha solving..."), "info");
-                                    case 5:
-                                        return t.n = 6, new Promise(function(t) {
-                                            return setTimeout(t, 1e3)
-                                        });
-                                    case 6:
-                                        if (e.isConnected) {
-                                            t.n = 7;
-                                            break
-                                        }
-                                        return this.app.toasts.remove(n), t.a(2);
-                                    case 7:
-                                        return t.n = 8, fetch("https://api.anti-captcha.com/getTaskResult", {
-                                            method: "POST",
-                                            body: JSON.stringify({
-                                                clientKey: this.antiCaptchaKey,
-                                                taskId: c
-                                            })
-                                        });
-                                    case 8:
-                                        return l = t.v, t.n = 9, l.json();
-                                    case 9:
-                                        if (0 === (u = t.v).errorId) {
-                                            t.n = 10;
-                                            break
-                                        }
-                                        return o("Anti-Captcha Error: ".concat(u.errorDescription), "error"), setTimeout(function() {
-                                            return d.app.toasts.remove(n)
-                                        }, 5e3), t.a(3, 12);
-                                    case 10:
-                                        if ("ready" !== u.status) {
-                                            t.n = 11;
-                                            break
-                                        }
-                                        return h = u.solution.token, e.sendCaptcha(1, h), o("".concat(e.type, " Tab: Anti-Captcha Solved!"), "success"), setTimeout(function() {
-                                            return d.app.toasts.remove(n)
-                                        }, 3e3), t.a(3, 12);
-                                    case 11:
-                                        this.logger.log("Anti-Captcha Task ".concat(c, " still processing...")), t.n = 5;
-                                        break;
-                                    case 12:
-                                        t.n = 14;
-                                        break;
-                                    case 13:
-                                        t.p = 13, f = t.v, o("Anti-Captcha Network Error", "error"), setTimeout(function() {
-                                            return d.app.toasts.remove(n)
-                                        }, 5e3), this.logger.error("Anti-Captcha solve failed:", f);
-                                    case 14:
-                                        return t.a(2)
-                                }
-                            }, t, this, [
-                                [1, 13]
-                            ])
-                        })), function(t) {
-                            return n.apply(this, arguments)
-                        })
-                    }, {
-
-                        
                         key: "reconnectChat",
                         value: function() {
                             var t = this;
@@ -4179,7 +4029,7 @@ get: function() {
                                     }), i.events.on("error", function(t) {
                                         e.app.toasts.remove(o), i.logger.error("Error:", t), e.app.toasts.show("Connection Error", "error", 3e3)
                                     }), i.events.on("captcha", function(t) {
-                                        1 === t.type ? e.solveTurnstile(i) : e.app.toasts.show("".concat(i.type, " Tab - Needs unknown captcha (type: ").concat(t.type, ")"), "error", 5e3)
+                                        1 === t.type ? (window.__JAXXV6_NATIVE_CAPTCHA__ ? window.__JAXXV6_NATIVE_CAPTCHA__(i, e.app) : e.app.toasts.show("Cloudflare verification is unavailable. Please reload Senpa.io.", "error", 5e3)) : e.app.toasts.show("".concat(i.type, " Tab - Needs unknown captcha (type: ").concat(t.type, ")"), "error", 5e3)
                                     }), i.events.on("ready", function() {
                                         i.logger.log("Client Ready."), n.addConnection(i), "wss://eu1.senpa.io:7101" === e.app.player.serverUrl && i.sendSpectate(), e.app.player.chat && e.app.player.chat.registerClient(i);
                                         var t = document.getElementById("serverPlayerInfo");

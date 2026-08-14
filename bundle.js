@@ -12244,20 +12244,21 @@ value: function(t, e) {
                 }
                 function addSenpaConnectionParams(t) {
                     try {
-                        var e = new URL(t), n = location.host || "unknown";
+                        var n = location.host || "unknown";
                         if (window.self !== window.top) {
                             try { n = "iframe:" + (document.referrer ? new URL(document.referrer).host : "unknown"); } catch (_) { n = "iframe:unknown"; }
                         }
-                        e.searchParams.has("po") || e.searchParams.set("po", n);
-                        if (!e.searchParams.has("tid")) {
-                            var r = localStorage.getItem("_afc_uid"), i = /^[a-f0-9]{32}$/.test(r || "");
-                            if (!i) {
-                                r = Array.from(crypto.getRandomValues(new Uint8Array(16))).map(function(t) { return t.toString(16).padStart(2, "0"); }).join("");
-                                try { localStorage.setItem("_afc_uid", r); } catch (_) {}
+                        var r = String(t), i = r.indexOf("?"), a = i >= 0 ? r.slice(0, i) : r, o = new URLSearchParams(i >= 0 ? r.slice(i + 1) : "");
+                        o.has("po") || o.set("po", n);
+                        if (!o.has("tid")) {
+                            var s = localStorage.getItem("_afc_uid"), c = /^[a-f0-9]{32}$/.test(s || "");
+                            if (!c) {
+                                s = Array.from(crypto.getRandomValues(new Uint8Array(16))).map(function(t) { return t.toString(16).padStart(2, "0"); }).join("");
+                                try { localStorage.setItem("_afc_uid", s); } catch (_) {}
                             }
-                            e.searchParams.set("tid", r);
+                            o.set("tid", s);
                         }
-                        return e.toString();
+                        return a + "?" + o.toString();
                     } catch (_) { return t; }
                 }
                 var Gn, zn = Hn(function t() {

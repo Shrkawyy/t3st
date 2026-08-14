@@ -88,7 +88,8 @@
   function safeUrl(url) {
     try {
       var parsed = new URL(String(url));
-      return parsed.protocol + '//' + parsed.host + parsed.pathname +
+      var path = parsed.pathname === '/' ? '' : parsed.pathname;
+      return parsed.protocol + '//' + parsed.host + path +
         '?po=' + (parsed.searchParams.has('po') ? 'present' : 'missing') +
         '&tid=' + (parsed.searchParams.has('tid') ? 'present' : 'missing');
     } catch (_) {

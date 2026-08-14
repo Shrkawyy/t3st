@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         JaxxV6 for Senpa
 // @namespace    https://github.com/Shrkawyy/t3st
-// @version      6.1.3
+// @version      6.1.4
 // @description  Loads the JaxxV6 client on Senpa's official web origin.
 // @author       Shrkawyy
 // @match        https://senpa.io/web/*
@@ -20,7 +20,7 @@
 
   const DEFAULT_BASE_URL = 'https://shrkawyy.github.io/t3st/';
   const CLIENT_FILE = 'client.html';
-  const VERSION = '6.1.3';
+  const VERSION = '6.1.4';
 
   function normalizeBaseUrl(value) {
     try {

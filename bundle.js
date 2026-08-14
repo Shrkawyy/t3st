@@ -12250,10 +12250,10 @@ value: function(t, e) {
                         }
                         e.searchParams.has("po") || e.searchParams.set("po", n);
                         if (!e.searchParams.has("tid")) {
-                            var r = localStorage.getItem("senpaio:tid");
-                            if (!r) {
-                                r = crypto.randomUUID ? crypto.randomUUID() : ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, function(t) { return (t ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> t / 4).toString(16); });
-                                localStorage.setItem("senpaio:tid", r);
+                            var r = localStorage.getItem("_afc_uid"), i = /^[a-f0-9]{32}$/.test(r || "");
+                            if (!i) {
+                                r = Array.from(crypto.getRandomValues(new Uint8Array(16))).map(function(t) { return t.toString(16).padStart(2, "0"); }).join("");
+                                try { localStorage.setItem("_afc_uid", r); } catch (_) {}
                             }
                             e.searchParams.set("tid", r);
                         }

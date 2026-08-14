@@ -12251,10 +12251,10 @@ value: function(t, e) {
                         var r = String(t), i = r.indexOf("?"), a = i >= 0 ? r.slice(0, i) : r, o = new URLSearchParams(i >= 0 ? r.slice(i + 1) : "");
                         o.has("po") || o.set("po", n);
                         if (!o.has("tid")) {
-                            var s = localStorage.getItem("_afc_uid"), c = /^[a-f0-9]{32}$/.test(s || "");
+                            var s = window.__JAXXV6_SENPA_TID__, c = /^[a-f0-9]{32}$/.test(s || "");
                             if (!c) {
                                 s = Array.from(crypto.getRandomValues(new Uint8Array(16))).map(function(t) { return t.toString(16).padStart(2, "0"); }).join("");
-                                try { localStorage.setItem("_afc_uid", s); } catch (_) {}
+                                try { window.__JAXXV6_SENPA_TID__ = s; } catch (_) {}
                             }
                             o.set("tid", s);
                         }

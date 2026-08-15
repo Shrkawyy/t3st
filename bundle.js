@@ -3334,7 +3334,7 @@
                         }, [{
                           key: "isConnected",
 get: function() {
-    return !!this.socket && this.socket.readyState === WebSocket.OPEN
+    return true
 }
                         }, {
                             key: "cleanup",
@@ -3991,14 +3991,14 @@ get: function() {
                                 }
                                 var o = e.nick;
                                 o && 0 !== o.trim().length || (o = "unnamed#".concat(e.playerID)), t.app.chatBox.addMessage(o, e.text, e.type, r, n)
-                                }), this.app.player.chat.events.on("wave", function(e) {
+                            }), this.app.player.chat.events.on("wave", function(e) {
                                 var n = t.app.stage.border,
                                     r = -(n.left + n.right) / 2,
                                     i = -(n.top + n.bottom) / 2,
                                     o = e.x - r,
                                     a = e.y - i;
                                 t.app.stage.createWave(o, a, e.color)
-                            }), this.app.player.chat.connect()
+                            })
                         }
                     }, {
                         key: "updateChatRoom",

@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         JaxxV6 for Senpa
+// @name         Ryuten-on-Senpa Client
 // @namespace    https://github.com/Shrkawyy/t3st
-// @version      6.1.9
-// @description  Loads the JaxxV6 client on Senpa's official web origin.
+// @version      6.4.0
+// @description  Loads the Ryuten-style Senpa client on Senpa's official web origin.
 // @author       Shrkawyy
 // @match        https://senpa.io/web/*
 // @match        https://www.senpa.io/web/*
@@ -20,7 +20,7 @@
 
   const DEFAULT_BASE_URL = 'https://shrkawyy.github.io/t3st/';
   const CLIENT_FILE = 'client.html';
-  const VERSION = '6.1.9';
+  const VERSION = '6.4.0';
 
   function normalizeBaseUrl(value) {
     try {
@@ -43,14 +43,14 @@
     style.textContent = `
       html{background:#07090d!important}
       body{visibility:hidden!important}
-      html::before{content:'Loading JaxxV6...';position:fixed;z-index:2147483647;inset:0;display:grid;place-items:center;background:#07090d;color:#dce7f4;font:16px system-ui,sans-serif;visibility:visible}
+      html::before{content:'Loading Ryuten-on-Senpa...';position:fixed;z-index:2147483647;inset:0;display:grid;place-items:center;background:#07090d;color:#dce7f4;font:16px system-ui,sans-serif;visibility:visible}
     `;
     (document.head || document.documentElement).appendChild(style);
   }
 
   function renderError(message) {
     window.stop();
-    document.title = 'JaxxV6 load error';
+    document.title = 'Ryuten-on-Senpa load error';
     const head = document.createElement('head');
     const body = document.createElement('body');
     const style = document.createElement('style');
@@ -62,7 +62,7 @@
 
     style.textContent = 'html,body{height:100%;margin:0;background:#090b10;color:#e8eef6;font:16px system-ui,sans-serif}body{display:grid;place-items:center}.box{max-width:620px;padding:30px;border:1px solid #2a3645;border-radius:14px;background:#111721}h1{margin-top:0;color:#ff647c}button{padding:10px 16px;border:0;border-radius:8px;cursor:pointer}';
     box.className = 'box';
-    title.textContent = 'JaxxV6 could not load';
+    title.textContent = 'Ryuten-on-Senpa could not load';
     detail.textContent = String(message);
     help.textContent = 'Check that GitHub Pages is enabled for the t3st repository, then reload.';
     reload.textContent = 'Reload';

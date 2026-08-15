@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Ryuten-on-Senpa Client
 // @namespace    https://github.com/Shrkawyy/t3st
-// @version      6.4.0
+// @version      6.4.1
 // @description  Loads the Ryuten-style Senpa client on Senpa's official web origin.
 // @author       Shrkawyy
 // @match        https://senpa.io/web/*
@@ -20,7 +20,7 @@
 
   const DEFAULT_BASE_URL = 'https://shrkawyy.github.io/t3st/';
   const CLIENT_FILE = 'client.html';
-  const VERSION = '6.4.0';
+  const VERSION = '6.4.1';
 
   function normalizeBaseUrl(value) {
     try {

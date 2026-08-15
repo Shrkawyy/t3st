@@ -180,7 +180,8 @@
       #hslo-senpa-ui, #hslo-senpa-ui * { box-sizing:border-box; }
       #hslo-senpa-ui { position:fixed; inset:0; z-index:3900; color:var(--hslo-text); font:400 14px 'Ubuntu','Titillium Web',sans-serif; pointer-events:none; opacity:0; transition:opacity .22s ease; }
       #hslo-senpa-ui.hslo-menu-open { opacity:1; }
-      #hslo-senpa-ui .hslo-menu-overlay { position:absolute; inset:0; background:radial-gradient(circle at 50% 42%,rgba(40,44,51,.30),rgba(4,5,7,.96) 72%),linear-gradient(120deg,rgba(255,255,255,.025),transparent 42%); pointer-events:auto; }
+      #hslo-senpa-ui .hslo-menu-overlay { position:absolute; inset:0; z-index:0; background:radial-gradient(circle at 50% 42%,rgba(40,44,51,.30),rgba(4,5,7,.96) 72%),linear-gradient(120deg,rgba(255,255,255,.025),transparent 42%); pointer-events:auto; }
+      #hslo-senpa-ui .hslo-topbar, #hslo-senpa-ui .hslo-player-data, #hslo-senpa-ui .hslo-skin-stage, #hslo-senpa-ui .hslo-control-bar, #hslo-senpa-ui .hslo-panel { pointer-events:auto; }
       #hslo-senpa-ui .hslo-menu-overlay::after { content:''; position:absolute; inset:0; opacity:.055; background-image:radial-gradient(rgba(255,255,255,.5) .5px,transparent .7px); background-size:5px 5px; pointer-events:none; }
       #hslo-senpa-ui .hslo-topbar { position:absolute; z-index:2; left:22px; top:17px; right:22px; display:flex; align-items:center; justify-content:space-between; }
       #hslo-senpa-ui .hslo-brand { font-size:21px; letter-spacing:7px; font-weight:600; }
@@ -284,7 +285,11 @@
   }
 
   function bind() {
-    root.querySelectorAll('[data-auth]').forEach(function (button) { button.addEventListener('click', function () { auth(button.getAttribute('data-auth')); }); });
+    root.addEventListener('click', function (event) {
+      var button = event.target && event.target.closest ? event.target.closest('button') : null;
+      if (button) event.stopPropagation();
+    }, true);
+    root.querySelectorAll('[data-auth]').forEach(function (button) { button.addEventListener('click', function (event) { event.preventDefault(); event.stopPropagation(); auth(button.getAttribute('data-auth')); }); });
     root.querySelectorAll('[data-skin]').forEach(function (button) { button.addEventListener('click', function () { activeSkin = Number(button.getAttribute('data-skin')) === 2 ? 2 : 1; root.querySelectorAll('[data-skin]').forEach(function (b) { b.classList.toggle('active', b === button); }); id('hslo-skin-number').textContent = String(activeSkin); refreshSkinPreview(); }); });
     root.querySelectorAll('[data-action]').forEach(function (button) { button.addEventListener('click', function () { var action = button.getAttribute('data-action'); if (action === 'play') play(); else if (action === 'spectate') spectate(); else if (action === 'settings') openPanel('settings'); else if (action === 'theme') openPanel('theme'); else if (action === 'inputs') { inputsVisible = !inputsVisible; id('hslo-player-data').classList.toggle('hslo-hidden', !inputsVisible); } }); });
     root.querySelectorAll('[data-close]').forEach(function (button) { button.addEventListener('click', function () { closePanel(button.getAttribute('data-close')); }); });
@@ -295,8 +300,37 @@
     var overlay = root.querySelector('.hslo-menu-overlay'); overlay.addEventListener('click', function () { if (!settingsVisible && !themeVisible) setMenu(false); });
   }
 
-  function play() { syncProfileToSenpa(); nativeClick(['#btnMenu','.btn-play']); setMenu(false); }
-  function spectate() { syncProfileToSenpa(); nativeClick(['#btnSpectate','.btn-spectate']); setMenu(false); }
+  function senpaLobby() { return window.app && window.app.lobby; }
+  function senpaCurrentClient() {
+    try { return window.app && window.app.dualConnectionHandler && window.app.dualConnectionHandler.current; }
+    catch (_) { return null; }
+  }
+  function play() {
+    syncProfileToSenpa();
+    nativeClick(['#btnMenu','.btn-play']);
+    setTimeout(function () {
+      try {
+        var client = senpaCurrentClient();
+        if (client && client.isDead && typeof client.sendSpawn === 'function') client.sendSpawn();
+        var lobby = senpaLobby();
+        if (lobby && typeof lobby.hide === 'function') lobby.hide();
+      } catch (_) {}
+    }, 30);
+    setMenu(false);
+  }
+  function spectate() {
+    syncProfileToSenpa();
+    nativeClick(['#btnSpectate','.btn-spectate']);
+    setTimeout(function () {
+      try {
+        var handler = window.app && window.app.dualConnectionHandler;
+        if (handler && typeof handler.forEachClient === 'function') handler.forEachClient(function (client) { if (client && typeof client.sendSpectate === 'function') client.sendSpectate(); });
+        var lobby = senpaLobby();
+        if (lobby && typeof lobby.hide === 'function') lobby.hide();
+      } catch (_) {}
+    }, 30);
+    setMenu(false);
+  }
   function setMenu(open) { menuVisible = !!open; if (root) root.classList.toggle('hslo-menu-open', menuVisible); }
   function openPanel(which) { settingsVisible = which === 'settings'; themeVisible = which === 'theme'; id('hslo-settings').classList.toggle('open', settingsVisible); id('hslo-theme').classList.toggle('open', themeVisible); if (settingsVisible) renderSettings(); if (themeVisible) renderTheme(); }
   function closePanel(which) { if (!which || which === 'settings') settingsVisible = false; if (!which || which === 'theme') themeVisible = false; if (id('hslo-settings')) id('hslo-settings').classList.toggle('open', settingsVisible); if (id('hslo-theme')) id('hslo-theme').classList.toggle('open', themeVisible); }

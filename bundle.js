@@ -2484,14 +2484,19 @@
                         }, {
                             key: "sendAuth",
                             value: function() {
-                                var e = "null";
-                                try {
-                                    var n = localStorage.getItem("senpaio:session");
-                                    /^[\w-]+\.[\w-]+\.[\w-]+$/.test(n || "") && (e = n);
-                                } catch (_) {}
-                                this.logger.log("[Auth] Sending session token: " + ("null" === e ? "none" : "present"));
-                                var t = new W;
-                                t.writeUInt8(13), t.writeUInt16(e.length), t.writeUTF16String(e), this.sendMessage(t)
+                                var t = this,
+                                    n = function() {
+                                        var e = "null";
+                                        try {
+                                            var n = localStorage.getItem("senpaio:session");
+                                            /^[\w-]+\.[\w-]+\.[\w-]+$/.test(n || "") && (e = n);
+                                        } catch (_) {}
+                                        t.logger.log("[Auth] Sending session token: " + ("null" === e ? "none" : "present"));
+                                        var r = new W;
+                                        r.writeUInt8(13), r.writeUInt16(e.length), r.writeUTF16String(e), t.sendMessage(r)
+                                    },
+                                    r = window.__JAXXV6_SESSION_READY__;
+                                r && "function" == typeof r.then ? (t.logger.log("[Auth] Waiting for Senpa session refresh"), r.then(n, n)) : n()
                             }
                         }, {
                             key: "updatePlayerClients",

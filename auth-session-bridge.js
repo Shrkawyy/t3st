@@ -58,6 +58,24 @@
     }
   });
 
+  function refreshSession() {
+    return fetch(AUTH_ORIGIN + '/auth/refresh', {
+      method: 'POST',
+      credentials: 'include'
+    }).then(function (response) {
+      return response.ok ? response.json() : null;
+    }).then(function (data) {
+      if (data && acceptToken(data.access_token, null)) {
+        window.dispatchEvent(new CustomEvent('senpa-auth-updated'));
+        return true;
+      }
+      return false;
+    }).catch(function () { return false; });
+  }
+
+  window.__JAXXV6_SESSION_READY__ = refreshSession();
+  window.__JAXXV6_REFRESH_SESSION__ = refreshSession;
+
   window.__JAXXV6_OPEN_AUTH__ = function (provider) {
     var endpoint = provider === 'facebook' ? '/auth/facebook' : '/auth/discord';
     var title = provider === 'facebook' ? 'Senpa Facebook Login' : 'Senpa Discord Login';

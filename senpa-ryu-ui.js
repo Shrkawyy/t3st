@@ -323,7 +323,222 @@
     });
   }
 
-  function openSettings() { click('.menu-btn.btn-settings'); }
+  var RYU_COMPAT_SETTINGS = {
+    GAMEPLAY: {
+      'GENERAL': [
+        {label:'Show HUD', desc:'Toggle the in-game HUD.', type:'toggle', key:'showHUD', def:true},
+        {label:'Show Chat', desc:'Display the chat panel.', type:'toggle', key:'showChat', def:true},
+        {label:'Show Cursor Lines', desc:'Draw cursor guide lines.', type:'toggle', key:'showCursorLines', def:false},
+        {label:'Show Food', desc:'Render pellets and food.', type:'toggle', key:'showFood', def:true},
+        {label:'Auto Switch', desc:'Automatically switch active cell.', type:'toggle', key:'autoSwitch', def:false}
+      ],
+      'CELL SETTINGS': [
+        {label:'Cell Opacity', desc:'Transparency of player cells.', type:'range', key:'cellOpacity', def:100, min:1, max:100, step:1},
+        {label:'Nickname Size', desc:'Scale of nicknames over cells.', type:'range', key:'nickSize', def:1.9, min:.5, max:3, step:.1, fixed:1},
+        {label:'Mass Size', desc:'Scale of mass text over cells.', type:'range', key:'massSize', def:2.4, min:.5, max:3, step:.1, fixed:1}
+      ]
+    },
+    GRAPHICS: {
+      'CAMERA': [
+        {label:'Camera Speed', desc:'Camera movement speed.', type:'range', key:'cameraSpeed', def:1, min:.1, max:3, step:.1, fixed:1},
+        {label:'Zoom Speed', desc:'Camera zoom response.', type:'range', key:'zoomSpeed', def:1, min:.1, max:3, step:.1, fixed:1},
+        {label:'Debug Viewport', desc:'Show the debug viewport overlay.', type:'toggle', key:'debugViewport', def:false}
+      ],
+      'RENDERING': [
+        {label:'Cell Animation', desc:'Smooth cell movement and animation.', type:'toggle', key:'cellAnimation', def:true},
+        {label:'FPS Limit', desc:'Preferred rendering limit.', type:'select', key:'fpsLimit', def:'144', options:['60','120','144','240']}
+      ]
+    },
+    THEME: {
+      'BACKGROUND': [
+        {label:'Background Image URL', desc:'Direct URL to an image.', type:'text', key:'themeBackgroundImage', def:'', placeholder:'https://...'},
+        {label:'Show Background Image', desc:'Enable the background image.', type:'toggle', key:'themeShowBackgroundImage', def:true},
+        {label:'Background Color', desc:'Color behind the game grid.', type:'color', key:'themeBackgroundColor', def:'#111111'},
+        {label:'Show Grid', desc:'Draw the background grid.', type:'toggle', key:'showGrid', def:false},
+        {label:'Grid Color', desc:'Color of the background grid.', type:'color', key:'themeGridColor', def:'#2A2929'}
+      ],
+      'BORDER': [
+        {label:'Show Border', desc:'Draw the map border.', type:'toggle', key:'showBorder', def:true},
+        {label:'Border Color', desc:'Color of the map border.', type:'color', key:'themeBorderColor', def:'#FFFFFF'},
+        {label:'Border Line Width', desc:'Thickness of the map border.', type:'range', key:'themeBorderWidth', def:20, min:1, max:50, step:1}
+      ],
+      'EFFECTS': [
+        {label:'Show Multibox Rings', desc:'Draw active and inactive cell rings.', type:'toggle', key:'showMultiboxRings', def:true},
+        {label:'Multibox Ring Width', desc:'Thickness of the cell rings.', type:'range', key:'themeMultiboxRingWidth', def:10, min:1, max:30, step:1}
+      ]
+    },
+    ELEMENTS: {
+      'NAMES AND MASS': [
+        {label:'Show Names', desc:'Display player nicknames.', type:'toggle', key:'showNames', def:true},
+        {label:'Show Mass', desc:'Display player mass.', type:'toggle', key:'showMass', def:true},
+        {label:'Auto Hide Names', desc:'Hide names at small zoom levels.', type:'toggle', key:'autoHideNames', def:false},
+        {label:'Auto Hide Mass', desc:'Hide mass at small zoom levels.', type:'toggle', key:'autoHideMass', def:false},
+        {label:'Colored Names', desc:'Use cell colors for names.', type:'toggle', key:'coloredNames', def:false},
+        {label:'Colored Mass', desc:'Use cell colors for mass.', type:'toggle', key:'coloredMass', def:false}
+      ],
+      'SKINS AND FOOD': [
+        {label:'Show Skins', desc:'Render player skins.', type:'toggle', key:'showSkins', def:true},
+        {label:'Show Vanilla Skins', desc:'Render server-provided skins.', type:'toggle', key:'showVanillaSkins', def:true},
+        {label:'Show GIF Skins', desc:'Allow animated skins.', type:'toggle', key:'showGifSkins', def:false},
+        {label:'Rainbow Food', desc:'Use animated colors for food.', type:'toggle', key:'rainbowFood', def:false}
+      ]
+    },
+    CONTROLS: {
+      'KEYBINDS': [
+        {label:'Replay Recorder', desc:'Press a key to start or stop WebM capture.', type:'hotkey', key:'replayKey', def:'F8'},
+        {label:'Disconnect', desc:'Shortcut for disconnecting from the server.', type:'hotkey', key:'hotkeyDisconnect', def:''},
+        {label:'Emote Panel', desc:'Shortcut for opening emotes.', type:'hotkey', key:'hotkeyEmote', def:'RIGHTCLICK'},
+        {label:'Minimal Mode', desc:'Shortcut for minimal HUD mode.', type:'hotkey', key:'hotkeyMinimalMode', def:''}
+      ],
+      'MOUSE AND KEYBOARD': [
+        {label:'Invert Mouse Wheel', desc:'Invert the zoom wheel direction.', type:'toggle', key:'invertMouseWheel', def:false},
+        {label:'Lock Cursor', desc:'Keep cursor input inside the game.', type:'toggle', key:'lockCursor', def:false}
+      ]
+    },
+    CHAT: {
+      'CHAT DISPLAY': [
+        {label:'Show Chat', desc:'Display chat messages.', type:'toggle', key:'showChat', def:true},
+        {label:'Show Player IDs', desc:'Display player IDs in chat.', type:'toggle', key:'chatShowPlayerId', def:false},
+        {label:'Use Cell Color', desc:'Color chat names using cell colors.', type:'toggle', key:'chatUseCellColor', def:true},
+        {label:'Chat Nick Color', desc:'Color of chat nicknames.', type:'color', key:'chatNickColor', def:'#FFFFFF'},
+        {label:'Chat Message Color', desc:'Color of chat messages.', type:'color', key:'chatMessageColor', def:'#DDDDDD'}
+      ]
+    },
+    HUDS: {
+      'HUD ELEMENTS': [
+        {label:'Show Minimap', desc:'Display the minimap.', type:'toggle', key:'showMinimap', def:true},
+        {label:'Minimap Size', desc:'Size of the minimap.', type:'range', key:'minimapSize', def:250, min:120, max:500, step:10},
+        {label:'Show Leaderboard', desc:'Display the leaderboard.', type:'toggle', key:'showLeaderboard', def:true},
+        {label:'Show Stats', desc:'Display bottom performance stats.', type:'toggle', key:'showStats', def:true},
+        {label:'Show Global Skins', desc:'Enable global skins in the HUD.', type:'toggle', key:'showGlobalSkins', def:true}
+      ]
+    },
+    RYUTHEME: {
+      'GAMEPLAY TWEAKS': [
+        {label:'RyuTheme Kill Feed', desc:'Show a themed kill feed.', type:'localToggle', key:'killFeedOn', def:false},
+        {label:'Teammate Indicator', desc:'Show teammate indicators.', type:'localToggle', key:'teammateIndicatorOn', def:true},
+        {label:'Minimap Plus', desc:'Use the enhanced minimap overlay.', type:'localToggle', key:'minimapPlusOn', def:true},
+        {label:'Danger Indicators', desc:'Show danger information around cells.', type:'localToggle', key:'dangerIndicatorOn', def:false}
+      ],
+      'GAME COSMETICS': [
+        {label:'Name Font', desc:'Font preference for cell names.', type:'select', key:'fontIndex', def:'0', options:['Default','Orbitron','Oxanium','Exo 2','Russo One']},
+        {label:'Name Scale', desc:'Additional name scale.', type:'range', key:'nameScale', def:100, min:50, max:300, step:5},
+        {label:'Hide Flags', desc:'Hide country flags beside names.', type:'localToggle', key:'hideFlags', def:false},
+        {label:'Cell Avatar', desc:'Show avatar badges on cells.', type:'localToggle', key:'cellAvatarBadge', def:true}
+      ],
+      'LEADERBOARD AND MINIMAP': [
+        {label:'Leaderboard Theme', desc:'Apply the RyuTheme leaderboard style.', type:'localToggle', key:'lbThemeOn', def:true},
+        {label:'Minimap Theme', desc:'Apply the RyuTheme minimap style.', type:'localToggle', key:'minimapThemeOn', def:true},
+        {label:'Rainbow Border', desc:'Animate the border color.', type:'localToggle', key:'rainbowBorderOn', def:true},
+        {label:'Rainbow Glow', desc:'Animate the border glow.', type:'localToggle', key:'rainbowGlowOn', def:true}
+      ]
+    }
+  };
+
+  var _compatThemeStoreKey = 'ryuTheme';
+  function readCompatValue(def) {
+    if (def.type !== 'localToggle' && def.type !== 'hotkey' && def.type !== 'text' && def.type !== 'color' && def.type !== 'select' && def.type !== 'range' && def.type !== 'toggle') return def.def;
+    if (def.type === 'localToggle' || (def.type === 'hotkey' && /^hotkey|replayKey/.test(def.key)) || ['themeBackgroundImage','themeShowBackgroundImage','themeBackgroundColor','themeGridColor','themeBorderColor','themeBorderWidth','themeMultiboxRingWidth','fontIndex','nameScale','hideFlags','cellAvatarBadge','lbThemeOn','minimapThemeOn','rainbowBorderOn','rainbowGlowOn','killFeedOn','teammateIndicatorOn','minimapPlusOn','dangerIndicatorOn'].indexOf(def.key) !== -1) {
+      try { var obj = JSON.parse(localStorage.getItem(_compatThemeStoreKey) || '{}'); if (obj[def.key] !== undefined) return obj[def.key]; } catch (_) {}
+    }
+    return getSenpaSetting(def.key, def.def);
+  }
+  function writeCompatValue(def, value) {
+    var localKeys = def.type === 'localToggle' || ['themeBackgroundImage','themeShowBackgroundImage','themeBackgroundColor','themeGridColor','themeBorderColor','themeBorderWidth','themeMultiboxRingWidth','fontIndex','nameScale','hideFlags','cellAvatarBadge','lbThemeOn','minimapThemeOn','rainbowBorderOn','rainbowGlowOn','killFeedOn','teammateIndicatorOn','minimapPlusOn','dangerIndicatorOn','replayKey','hotkeyDisconnect','hotkeyEmote','hotkeyMinimalMode'].indexOf(def.key) !== -1;
+    if (localKeys) {
+      try { var obj = JSON.parse(localStorage.getItem(_compatThemeStoreKey) || '{}'); obj[def.key] = value; localStorage.setItem(_compatThemeStoreKey, JSON.stringify(obj)); } catch (_) {}
+    }
+    if (!localKeys || ['showHUD','showChat','showCursorLines','showFood','autoSwitch','cellOpacity','nickSize','massSize','cameraSpeed','zoomSpeed','debugViewport','showGrid','showBorder','showNames','showMass','autoHideNames','autoHideMass','coloredNames','coloredMass','showSkins','showVanillaSkins','showGifSkins','rainbowFood','showMinimap','minimapSize','showLeaderboard','showStats','showGlobalSkins','chatShowPlayerId','chatUseCellColor','chatNickColor','chatMessageColor'].indexOf(def.key) !== -1) setSenpaSetting(def.key, value);
+    if (def.key === 'themeBackgroundImage' || def.key === 'themeShowBackgroundImage' || def.key === 'themeBackgroundColor') applyCompatBackground();
+  }
+  function applyCompatBackground() {
+    try {
+      var obj = JSON.parse(localStorage.getItem(_compatThemeStoreKey) || '{}');
+      var image = obj.themeShowBackgroundImage === false ? 'none' : (obj.themeBackgroundImage ? 'url("' + String(obj.themeBackgroundImage).replace(/"/g, '') + '")' : 'none');
+      document.documentElement.style.setProperty('--sryu-compat-bg-image', image);
+      if (obj.themeBackgroundColor) document.documentElement.style.setProperty('--sryu-compat-bg-color', obj.themeBackgroundColor);
+    } catch (_) {}
+  }
+  function compatControl(def, refresh) {
+    var value = readCompatValue(def);
+    var wrap = document.createElement('div'); wrap.className = 'sryu-settings-control';
+    if (def.type === 'toggle' || def.type === 'localToggle') {
+      var btn = document.createElement('button'); btn.className = 'sryu-settings-toggle';
+      function paint() { var on = !!readCompatValue(def); btn.textContent = on ? 'ON' : 'OFF'; btn.classList.toggle('on', on); }
+      btn.addEventListener('click', function() { writeCompatValue(def, !readCompatValue(def)); paint(); if (refresh) refresh(); }); paint(); wrap.appendChild(btn);
+    } else if (def.type === 'range') {
+      var slider = document.createElement('input'); slider.type = 'range'; slider.min=def.min; slider.max=def.max; slider.step=def.step; slider.value=value;
+      var out = document.createElement('span'); out.className='sryu-settings-value';
+      function show(v) { out.textContent = def.fixed ? Number(v).toFixed(def.fixed) : String(v); }
+      show(value); slider.addEventListener('input', function() { writeCompatValue(def, Number(slider.value)); show(slider.value); }); wrap.appendChild(slider); wrap.appendChild(out);
+    } else if (def.type === 'color') {
+      var color = document.createElement('input'); color.type='color'; color.value=/^#[0-9a-f]{6}$/i.test(String(value)) ? value : def.def; color.addEventListener('input', function() { writeCompatValue(def, color.value); }); wrap.appendChild(color);
+      var hex = document.createElement('span'); hex.className='sryu-settings-value'; hex.textContent=color.value.toUpperCase(); color.addEventListener('input', function(){hex.textContent=color.value.toUpperCase();}); wrap.appendChild(hex);
+    } else if (def.type === 'text') {
+      var input=document.createElement('input'); input.className='sryu-settings-text'; input.value=value || ''; input.placeholder=def.placeholder || ''; input.addEventListener('change', function(){writeCompatValue(def,input.value);}); wrap.appendChild(input);
+    } else if (def.type === 'select') {
+      var sel=document.createElement('select'); sel.className='sryu-settings-select'; (def.options||[]).forEach(function(opt){var o=document.createElement('option');o.value=opt;o.textContent=opt;sel.appendChild(o);}); sel.value=String(value); sel.addEventListener('change', function(){writeCompatValue(def,sel.value);}); wrap.appendChild(sel);
+    } else if (def.type === 'hotkey') {
+      var key=document.createElement('button'); key.className='sryu-settings-hotkey'; key.textContent=value || '—'; var listening=false;
+      key.addEventListener('click', function(){if(listening)return;listening=true;key.textContent='PRESS KEY';key.classList.add('binding');function onKey(e){e.preventDefault();e.stopPropagation();document.removeEventListener('keydown',onKey,true);listening=false;var k=e.key===' ' ? 'SPACE' : e.key.toUpperCase();if(k==='ESCAPE'){key.textContent=readCompatValue(def)||'—';}else{writeCompatValue(def,k);key.textContent=k;}key.classList.remove('binding');}document.addEventListener('keydown',onKey,true);}); wrap.appendChild(key);
+    }
+    return wrap;
+  }
+  function renderCompatSettings(panel, tab, section) {
+    var defs = RYU_COMPAT_SETTINGS[tab] || {};
+    var sections = Object.keys(defs); section = sections.indexOf(section) >= 0 ? section : sections[0]; panel._compatTab=tab; panel._compatSection=section;
+    var sidebar=q('.sryu-settings-sidebar',panel), content=q('.sryu-settings-content',panel); if(!sidebar||!content)return;
+    sidebar.innerHTML='<div class="sryu-settings-side-title">SECTIONS</div>'+sections.map(function(s){return '<button class="sryu-settings-side-item '+(s===section?'active':'')+'" data-section="'+s.replace(/"/g,'&quot;')+'">'+s+'</button>';}).join('');
+    qa('.sryu-settings-side-item',sidebar).forEach(function(btn){btn.addEventListener('click',function(){renderCompatSettings(panel,tab,btn.dataset.section);});});
+    content.innerHTML='<div class="sryu-settings-content-title">'+tab+' <span>/ '+section+'</span></div>';
+    defs[section].forEach(function(def){var row=document.createElement('div');row.className='sryu-settings-row';var copy=document.createElement('div');copy.className='sryu-settings-copy';var label=document.createElement('div');label.className='sryu-settings-label';label.textContent=def.label;copy.appendChild(label);var desc=document.createElement('div');desc.className='sryu-settings-desc';desc.textContent=def.desc||'';copy.appendChild(desc);row.appendChild(copy);row.appendChild(compatControl(def));content.appendChild(row);});
+  }
+  function injectCompatSettingsStyle() {
+    if(q('#sryu-settings-style'))return; var s=document.createElement('style');s.id='sryu-settings-style';s.textContent=`
+      #senpa-ryu-settings{position:fixed;inset:0;z-index:99000;display:none;background:rgba(2,6,10,.78);backdrop-filter:blur(2px);font-family:'Titillium Web',sans-serif;color:#fff;}
+      #senpa-ryu-settings.open{display:flex;align-items:stretch;justify-content:flex-start;}
+      #senpa-ryu-settings .sryu-settings-box{width:min(980px,72vw);height:100vh;background:rgba(10,14,20,.97);border-right:1px solid rgba(255,255,255,.12);display:flex;flex-direction:column;box-shadow:20px 0 70px rgba(0,0,0,.45);}
+      #senpa-ryu-settings .sryu-settings-top{height:70px;display:flex;align-items:center;border-bottom:1px solid rgba(255,255,255,.08);padding:0 20px;gap:18px;flex:none;}
+      #senpa-ryu-settings .sryu-settings-logo{font-size:18px;letter-spacing:4px;color:rgba(255,255,255,.9);flex:none;}
+      #senpa-ryu-settings .sryu-settings-tabs{display:flex;align-items:stretch;height:100%;gap:2px;overflow:auto;flex:1;}
+      #senpa-ryu-settings .sryu-settings-tab{height:100%;padding:0 12px;border:0;border-bottom:2px solid transparent;background:transparent;color:rgba(255,255,255,.35);font:10px 'Titillium Web',sans-serif;letter-spacing:1px;cursor:pointer;white-space:nowrap;}
+      #senpa-ryu-settings .sryu-settings-tab:hover{color:rgba(255,255,255,.75)} #senpa-ryu-settings .sryu-settings-tab.active{color:#fff;border-bottom-color:rgba(255,255,255,.75)}
+      #senpa-ryu-settings .sryu-settings-close{width:30px;height:30px;background:transparent;border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.55);cursor:pointer;flex:none;}
+      #senpa-ryu-settings .sryu-settings-body{display:flex;min-height:0;flex:1;}
+      #senpa-ryu-settings .sryu-settings-sidebar{width:190px;flex:none;padding:18px 0;border-right:1px solid rgba(255,255,255,.07);overflow:auto;}
+      #senpa-ryu-settings .sryu-settings-side-title{padding:0 18px 12px;color:rgba(255,255,255,.25);font-size:9px;letter-spacing:2px;}
+      #senpa-ryu-settings .sryu-settings-side-item{display:block;width:100%;padding:12px 18px;text-align:left;background:transparent;border:0;border-left:2px solid transparent;color:rgba(255,255,255,.38);font:10px 'Titillium Web',sans-serif;letter-spacing:.7px;cursor:pointer;}
+      #senpa-ryu-settings .sryu-settings-side-item:hover{background:rgba(255,255,255,.04);color:#fff} #senpa-ryu-settings .sryu-settings-side-item.active{background:rgba(255,255,255,.07);border-left-color:#22d3ee;color:#fff;}
+      #senpa-ryu-settings .sryu-settings-content{min-width:0;flex:1;overflow:auto;padding:24px 28px 80px;background:linear-gradient(90deg,rgba(255,255,255,.01),transparent);}
+      #senpa-ryu-settings .sryu-settings-content-title{font-size:13px;letter-spacing:3px;color:rgba(255,255,255,.8);padding-bottom:18px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:4px;} #senpa-ryu-settings .sryu-settings-content-title span{color:rgba(255,255,255,.28);font-size:10px;letter-spacing:1px;}
+      #senpa-ryu-settings .sryu-settings-row{display:flex;align-items:center;justify-content:space-between;gap:22px;min-height:58px;padding:10px 4px;border-bottom:1px solid rgba(255,255,255,.055);}
+      #senpa-ryu-settings .sryu-settings-label{font-size:11px;letter-spacing:.8px;color:rgba(255,255,255,.82);text-transform:uppercase;} #senpa-ryu-settings .sryu-settings-desc{font-size:9px;color:rgba(255,255,255,.28);margin-top:3px;letter-spacing:.2px;}
+      #senpa-ryu-settings .sryu-settings-control{display:flex;align-items:center;gap:9px;flex:none;} #senpa-ryu-settings .sryu-settings-value{min-width:38px;text-align:right;color:rgba(255,255,255,.55);font-size:10px;}
+      #senpa-ryu-settings .sryu-settings-toggle,#senpa-ryu-settings .sryu-settings-hotkey{min-width:48px;height:24px;padding:0 9px;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.45);font:9px 'Titillium Web',sans-serif;letter-spacing:1px;cursor:pointer;} #senpa-ryu-settings .sryu-settings-toggle.on{background:rgba(34,211,238,.12);border-color:rgba(34,211,238,.55);color:#22d3ee;} #senpa-ryu-settings .sryu-settings-hotkey.binding{background:rgba(34,211,238,.12);border-color:#22d3ee;color:#22d3ee;}
+      #senpa-ryu-settings input[type=range]{width:180px;accent-color:#22d3ee;} #senpa-ryu-settings input[type=color]{width:28px;height:24px;padding:0;border:1px solid rgba(255,255,255,.2);background:transparent;cursor:pointer;} #senpa-ryu-settings .sryu-settings-text,#senpa-ryu-settings .sryu-settings-select{width:220px;height:28px;box-sizing:border-box;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.16);color:rgba(255,255,255,.8);padding:0 9px;outline:none;font:10px 'Titillium Web',sans-serif;} #senpa-ryu-settings .sryu-settings-select{width:150px;}
+      #senpa-ryu-settings .sryu-settings-footer{height:48px;display:flex;align-items:center;gap:8px;padding:0 18px;border-top:1px solid rgba(255,255,255,.08);flex:none;} #senpa-ryu-settings .sryu-settings-footer button{height:28px;padding:0 12px;background:transparent;border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.5);font:9px 'Titillium Web',sans-serif;letter-spacing:1px;cursor:pointer;} #senpa-ryu-settings .sryu-settings-footer button:hover{border-color:rgba(34,211,238,.45);color:#22d3ee;} #senpa-ryu-settings .sryu-settings-footer .native{margin-left:auto;}
+      @media(max-width:800px){#senpa-ryu-settings .sryu-settings-box{width:100vw}#senpa-ryu-settings .sryu-settings-sidebar{width:140px}#senpa-ryu-settings .sryu-settings-content{padding:20px 14px}#senpa-ryu-settings .sryu-settings-row{align-items:flex-start;flex-direction:column;gap:10px}#senpa-ryu-settings input[type=range]{width:150px}}
+    `;document.head.appendChild(s); applyCompatBackground();
+  }
+  function openRyuSettingsOverlay(tab) {
+    injectCompatSettingsStyle();
+    var old=q('#settingsOverlay'); if(old){old.style.display='none';old.classList.remove('active');}
+    var panel=q('#senpa-ryu-settings');
+    if(!panel){
+      panel=document.createElement('div'); panel.id='senpa-ryu-settings'; panel.innerHTML='<div class="sryu-settings-box"><div class="sryu-settings-top"><div class="sryu-settings-logo">RYUTEN</div><div class="sryu-settings-tabs"></div><button class="sryu-settings-close">✕</button></div><div class="sryu-settings-body"><div class="sryu-settings-sidebar"></div><div class="sryu-settings-content"></div></div><div class="sryu-settings-footer"><button data-action="reset">RESET</button><button data-action="export">EXPORT</button><button data-action="import">IMPORT</button><button class="native" data-action="native">SENPA SETTINGS</button></div></div>'; document.body.appendChild(panel);
+      var tabs=q('.sryu-settings-tabs',panel); Object.keys(RYU_COMPAT_SETTINGS).forEach(function(name){var b=document.createElement('button');b.className='sryu-settings-tab';b.dataset.tab=name;b.textContent=name;b.addEventListener('click',function(){qa('.sryu-settings-tab',panel).forEach(function(x){x.classList.remove('active');});b.classList.add('active');renderCompatSettings(panel,name);});tabs.appendChild(b);});
+      q('.sryu-settings-close',panel).addEventListener('click',function(){panel.classList.remove('open');document.body.classList.remove('sryu-settings-open');});
+      panel.addEventListener('click',function(e){if(e.target===panel){panel.classList.remove('open');document.body.classList.remove('sryu-settings-open');}});
+      q('[data-action="reset"]',panel).addEventListener('click',function(){try{localStorage.removeItem(_compatThemeStoreKey);}catch(_){};renderCompatSettings(panel,panel._compatTab||'GAMEPLAY',panel._compatSection);});
+      q('[data-action="export"]',panel).addEventListener('click',function(){var out={version:1,settings:{}};try{out.settings=JSON.parse(localStorage.getItem(_compatThemeStoreKey)||'{}');}catch(_){};var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(out,null,2)],{type:'application/json'}));a.download='ryuten-settings.json';a.click();setTimeout(function(){URL.revokeObjectURL(a.href);},1000);});
+      q('[data-action="import"]',panel).addEventListener('click',function(){var input=document.createElement('input');input.type='file';input.accept='.json,application/json';input.onchange=function(){var file=input.files&&input.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(){try{var parsed=JSON.parse(reader.result);if(parsed.settings)localStorage.setItem(_compatThemeStoreKey,JSON.stringify(parsed.settings));renderCompatSettings(panel,panel._compatTab||'GAMEPLAY',panel._compatSection);}catch(_){}};reader.readAsText(file);};input.click();});
+      q('[data-action="native"]',panel).addEventListener('click',function(){panel.classList.remove('open');var native=q('.menu-btn.btn-settings');if(native)native.click();});
+      document.addEventListener('keydown',function(e){if(e.key==='Escape'&&panel.classList.contains('open')){panel.classList.remove('open');document.body.classList.remove('sryu-settings-open');}});
+    }
+    var chosen=RYU_COMPAT_SETTINGS[tab]?tab:'GAMEPLAY'; qa('.sryu-settings-tab',panel).forEach(function(b){b.classList.toggle('active',b.dataset.tab===chosen);}); panel.classList.add('open'); document.body.classList.add('sryu-settings-open'); renderCompatSettings(panel,chosen); return true;
+  }
+
+  function openSettings() { return openRyuSettingsOverlay('GAMEPLAY'); }
   function openSenpaSkinManager() {
     try {
       var lobby = window.app && window.app.lobby;
